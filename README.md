@@ -1,4 +1,4 @@
-# draft
+# Draft
 Interview preparation project.
 
 ## Project structure
