@@ -17,11 +17,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # GTest
-if (EXISTS ${CMAKE_CURRENT_LIST_DIR}/Extern/GoogleTest)
-   add_subdirectory(Extern/GoogleTest)
+if (EXISTS ${CMAKE_CURRENT_LIST_DIR}/Extern/GTest/googletest/CMakeLists.txt)
+   add_subdirectory(Extern/GTest)
    set(IS_GOOGLETEST_FOUND TRUE)
 else()
-   message(STATUS "GoogleTest isn't found in ${CMAKE_CURRENT_LIST_DIR}/Extern")
+   message(STATUS "GTest isn't found in ${CMAKE_CURRENT_LIST_DIR}/Extern")
    message(STATUS "Run the command git submodule update --init --recursive")
 endif()
 
