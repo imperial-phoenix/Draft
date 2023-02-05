@@ -38,4 +38,5 @@ else()
 endif()
 message(STATUS "* ============================== *")
 
-# add_subdirectory(Test)
+# Subdirectories
+add_subdirectory(Src)
