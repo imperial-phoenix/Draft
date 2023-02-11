@@ -7,6 +7,7 @@
 #ifndef __MISC_H__
 #define __MISC_H__
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -110,8 +111,8 @@ typedef uint64_t STRUCT_ID;
  */
 #define GET_THIS(This, ClassName) \
    ClassName* this = GET_STRUCT_FIELD(This, ClassName, VTable); \
-   if (NULL == this) { SET_CS(SC_INVALID_PARAMETER); break; }   \
+   if (NULL == this) { SET_SC(SC_INVALID_PARAMETER); break; }   \
    if (this->StructureId != ClassName ## _STRUCT_ID)            \
-   { SET_CS(SC_INVALID_PARAMETER); break; }
+   { SET_SC(SC_INVALID_PARAMETER); break; }
 
 #endif // __MISC_H__
