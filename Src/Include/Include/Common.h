@@ -52,6 +52,7 @@
  */
 typedef uint32_t STATUS_CODE;
 
+
 /** Successful status. */
 #define SC_SUCCESS 0x00000000U
 
@@ -67,7 +68,8 @@ typedef uint32_t STATUS_CODE;
 #define SET_SC(StatusCode) \
    status = (0x0000FFFF & __LINE__) | StatusCode
 
-#define SC_ERROR(StatusCode) (int32_t)StatusCode < 0
+/** Returns true if the status code(StatusCode) is an error. */
+#define SC_ERROR(StatusCode) ((int32_t)StatusCode < 0)
 
 
 ///////////////////////////////////////////////////////////
@@ -102,11 +104,14 @@ typedef uint64_t STRUCT_ID;
    (ClassName*)NULL
 
 
-/** By pointer to the protocol(This), get the pointer to the
+/**
+ *  By pointer to the protocol(This), get the pointer to the
  *  structure(ClassName) that implements it.
  */
 #define GET_THIS(This, ClassName) \
    ClassName* this = GET_STRUCT_FIELD(This, ClassName, VTable); \
-   if (this->StructureId != ClassName ## _STRUCT_ID) this = NULL;
+   if (NULL == this) { SET_CS(SC_INVALID_PARAMETER); break; }   \
+   if (this->StructureId != ClassName ## _STRUCT_ID)            \
+   { SET_CS(SC_INVALID_PARAMETER); break; }
 
 #endif // __MISC_H__
