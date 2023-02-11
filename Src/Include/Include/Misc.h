@@ -1,5 +1,5 @@
 /**
- * @file    Common.h
+ * @file    Misc.h
  * @brief   Entities common to all projects.
  * @ingroup MISC
  */
