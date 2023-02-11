@@ -109,7 +109,7 @@ typedef uint64_t STRUCT_ID;
  *  By pointer to the protocol(This), get the pointer to the
  *  structure(ClassName) that implements it.
  */
-#define GET_THIS(This, ClassName) \
+#define GET_THIS(This, ClassName)                               \
    ClassName* this = GET_STRUCT_FIELD(This, ClassName, VTable); \
    if (NULL == this) { SET_SC(SC_INVALID_PARAMETER); break; }   \
    if (this->StructureId != ClassName ## _STRUCT_ID)            \
