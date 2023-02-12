@@ -13,156 +13,251 @@ extern "C"
 }
 
 
-TEST(CList, CListCreate)
+///////////////////////////////////////////////////////////
+//                    CList Fixtures                     //
+///////////////////////////////////////////////////////////
+
+struct CListEmpty : public testing::Test
 {
-   // Arrange
    CLIST* list = NULL;
 
-   // Act
-   list = CListCreate();
+   // Per-test set-up
+   void SetUp() override
+   {
+      list = CListCreate();
+      ASSERT_FALSE(list == NULL);
+   }
 
-   // Assert
-   ASSERT_FALSE(list == NULL);
-}
+   // You can define per-test tear-down logic as usual
+   void TearDown() override
+   {
+      // Nothing to do for now
+   }
+
+};
 
 
-TEST(CList, CListPushFront_InvPrms_1)
+struct CListOneElement : public testing::Test
 {
-   // Arrange
    CLIST* list = NULL;
+
+   // Per-test set-up
+   void SetUp() override
+   {
+      list = CListCreate();
+      ASSERT_FALSE(list == NULL);
+
+      int data = 1;
+      STATUS_CODE status = list->PushFront(list, &data, sizeof(int));
+      ASSERT_FALSE(SC_ERROR(status));
+   }
+
+   // You can define per-test tear-down logic as usual
+   void TearDown() override
+   {
+      // Nothing to do for now
+   }
+
+};
+
+
+///////////////////////////////////////////////////////////
+//                      CListCreate                      //
+///////////////////////////////////////////////////////////
+
+TEST(CListCreate, CorrectCreation)
+{
+   /*** Arrange ***/
+   CLIST *list = NULL;
    STATUS_CODE status = SC_SUCCESS;
 
-   // Act
+   /*** Act ***/
    list = CListCreate();
-   int data = 0;
-   status = list->PushFront(NULL, &data, sizeof(int));
 
-   // Assert
-   ASSERT_TRUE(SC_ERROR(status));
+   /*** Assert ***/
+   EXPECT_FALSE(NULL == list);
 }
 
+///////////////////////////////////////////////////////////
+//                       PushFront                       //
+///////////////////////////////////////////////////////////
 
-TEST(CList, CListPushFront_InvPrms_2)
+TEST_F(CListEmpty, PushFrontInvPrms)
 {
-   // Arrange
-   CLIST* list = NULL;
+   /*** Arrange ***/
    STATUS_CODE status = SC_SUCCESS;
 
-   // Act
-   list = CListCreate();
-   int data = 0;
-   status = list->PushFront(list, NULL, sizeof(int));
+   /*** Act && Assert ***/
+   status = list->PushFront(NULL, NULL, 0);
+   EXPECT_TRUE(SC_ERROR(status));
 
-   // Assert
-   ASSERT_TRUE(SC_ERROR(status));
-}
+   status = list->PushFront(list, NULL, 0);
+   EXPECT_TRUE(SC_ERROR(status));
 
-
-TEST(CList, CListPushFront_InvPrms_3)
-{
-   // Arrange
-   CLIST* list = NULL;
-   STATUS_CODE status = SC_SUCCESS;
-
-   // Act
-   list = CListCreate();
-   int data = 0;
+   int data = 25;
    status = list->PushFront(list, &data, 0);
+   EXPECT_TRUE(SC_ERROR(status));
 
-   // Assert
-   ASSERT_TRUE(SC_ERROR(status));
+   status = list->PushFront(list, NULL, sizeof(int));
+   EXPECT_TRUE(SC_ERROR(status));
 }
 
 
-TEST(CList, CListPushFront_ValidPrms)
+TEST_F(CListEmpty, PushFrontValidPrms)
 {
-   // Arrange
-   CLIST* list = NULL;
+   /*** Arrange ***/
    STATUS_CODE status = SC_SUCCESS;
+   void** data = NULL;
+   size_t* dataSize = NULL;
+   CLIST_NODE* position = NULL;
 
-   // Act
-   list = CListCreate();
-   int data = 0;
-   status = list->PushFront(list, &data, sizeof(int));
+   /*** Act && Acts ***/
+   for (size_t i = 0; i < 25; ++i)
+   {
+      status = list->PushFront(list, &i, sizeof(size_t));
+      ASSERT_FALSE(SC_ERROR(status));
+   }
 
-   // Assert
-   ASSERT_FALSE(SC_ERROR(status));
+   position = list->Front(list);
+   while(position != NULL)
+   {
+      status = list->GetRefToData(list, position, &data, &dataSize);
+      ASSERT_FALSE(SC_ERROR(status));
+
+      std::printf("data: %ld\n", **((size_t**)data));
+
+      position = list->Next(list, position);
+   }
+
+   position = list->Front(list);
+   while (position != NULL)
+   {
+      status = list->GetRefToData(list, position, &data, &dataSize);
+      ASSERT_FALSE(SC_ERROR(status));
+
+      free(*data);
+      *data = malloc(sizeof(double));
+      **((double**)data) = 3.141592;
+      *dataSize = sizeof(double);
+
+      position = list->Next(list, position);
+   }
+
+   position = list->Front(list);
+   while (position != NULL)
+   {
+      status = list->GetRefToData(list, position, &data, &dataSize);
+      ASSERT_FALSE(SC_ERROR(status));
+
+      std::printf("data %lf\n", **((double**)data));
+
+      position = list->Next(list, position);
+   }
 }
 
 
-TEST(CList, CListFront_ValidPrms_1)
+// ///////////////////////////////////////////////////////////
+// //                         Front                         //
+// ///////////////////////////////////////////////////////////
+
+TEST_F(CListEmpty, FrontOnEmpty)
 {
-   // Arrange
-   CLIST* list = NULL;
+   /*** Arrange ***/
    STATUS_CODE status = SC_SUCCESS;
 
-   // Act
-   list = CListCreate();
-   int data = 25;
-   status = list->PushFront(list, &data, sizeof(int));
-   ASSERT_FALSE(SC_ERROR(status));
+   /*** Act && Assert ***/
+   // Invalid params
+   CLIST_NODE *head = list->Front(NULL);
+   EXPECT_FALSE(SC_ERROR(status));
+
+   // Valid params
+   head = list->Front(list);
+   EXPECT_TRUE(NULL == head);
+}
+
+
+TEST_F(CListOneElement, Front)
+{
+   /*** Arrange ***/
+   STATUS_CODE status = SC_SUCCESS;
+
+   /*** Act ***/
    CLIST_NODE* head = list->Front(list);
 
-   // Assert
-   ASSERT_FALSE(head == NULL);
+   /*** Assert ***/
+   EXPECT_TRUE(NULL != head);
 }
 
 
-TEST(CList, CListFront_ValidPrms_2)
+// ///////////////////////////////////////////////////////////
+// //                     GetRefToData                      //
+// ///////////////////////////////////////////////////////////
+
+
+TEST_F(CListOneElement, GetRefToDataInvPrms)
 {
-   // Arrange
-   CLIST* list = NULL;
+   /*** Arrange ***/
+   STATUS_CODE status = SC_SUCCESS;
+   CLIST_NODE* head = NULL;
+   void** data = NULL;
+   size_t* dataSize = NULL;
+
+   /*** Act && Assert ***/
+   status = list->GetRefToData(NULL, NULL, NULL, NULL);
+   EXPECT_TRUE(SC_ERROR(status));
+
+   status = list->GetRefToData(list, NULL, NULL, NULL);
+   EXPECT_TRUE(SC_ERROR(status));
+
+   head = list->Front(list);
+   ASSERT_TRUE(NULL != head);
+
+   status = list->GetRefToData(list, head, NULL, NULL);
+   EXPECT_TRUE(SC_ERROR(status));
+
+   status = list->GetRefToData(list, head, &data, NULL);
+   EXPECT_TRUE(SC_ERROR(status));
+
+   status = list->GetRefToData(list, head, NULL, &dataSize);
+   EXPECT_TRUE(SC_ERROR(status));
+}
+
+
+TEST_F(CListOneElement, GetRefToDataValidPrms)
+{
+   /*** Arrange ***/
    STATUS_CODE status = SC_SUCCESS;
 
-   // Act
-   list = CListCreate();
+   /*** Act && Assert ***/
+   // Get data
    CLIST_NODE* head = list->Front(list);
-
-   // Assert
-   ASSERT_TRUE(head == NULL);
-}
-
-
-TEST(CList, CListFront_InvPrms)
-{
-   // Arrange
-   CLIST* list = NULL;
-   STATUS_CODE status = SC_SUCCESS;
-
-   // Act
-   list = CListCreate();
-   int data = 25;
-   status = list->PushFront(list, &data, sizeof(int));
-   ASSERT_FALSE(SC_ERROR(status));
-   CLIST_NODE* head = list->Front(NULL);
-
-   // Assert
-   ASSERT_TRUE(head == NULL);
-}
-
-
-TEST(CList, CListGetRefToData)
-{
-   // Arrange
-   CLIST* list = NULL;
-   STATUS_CODE status = SC_SUCCESS;
-
-   // Act
-   list = CListCreate();
-   int data = 25;
-   status = list->PushFront(list, &data, sizeof(int));
-   ASSERT_FALSE(SC_ERROR(status));
-   CLIST_NODE* head = list->Front(list);
-   ASSERT_FALSE(NULL == head);
-
-   // Assert
-   void *pData = NULL;
+   ASSERT_TRUE(NULL != head);
+   void** data = NULL;
    size_t *dataSize = NULL;
-   status = list->GetRefToData(list, head, &pData, &dataSize);
-   ASSERT_FALSE(SC_ERROR(status));
-   ASSERT_TRUE(*((int*)pData) == 25);
-   ASSERT_TRUE(*dataSize = sizeof(int));
+
+   status = list->GetRefToData(list, head, &data, &dataSize);
+   EXPECT_FALSE(SC_ERROR(status));
+   EXPECT_TRUE(1 == **((int**)data));
+   EXPECT_TRUE(sizeof(int) == *dataSize);
+
+   // Change data
+   free(*data);
+
+   *data = malloc(sizeof(double));
+   **((double**)data) = 3.1415;
+   *dataSize = sizeof(double);
+
+   status = list->GetRefToData(list, head, &data, &dataSize);
+   EXPECT_FALSE(SC_ERROR(status));
+   EXPECT_TRUE(3.1415 == **((double**)data));
+   EXPECT_TRUE(sizeof(double) == *dataSize);
 }
+
+
+///////////////////////////////////////////////////////////
+//                         Front                         //
+///////////////////////////////////////////////////////////
+
 
 
 int main(int argc, char** argv)

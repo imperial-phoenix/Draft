@@ -56,8 +56,21 @@ STATUS_CODE
 (*CLIST_GET_REF_TO_DATA)(
    IN CLIST*      This,
    IN CLIST_NODE* Position,
-   IN void**      Data,
+   IN void***     Data,
    IN size_t**    DataSize);
+
+
+/**
+ * @brief 
+ * 
+ * @param[in]  This      Pointer to CList protocol
+ * @param[in]  Position  
+ */
+typedef
+CLIST_NODE*
+(*CLIST_NEXT)(
+   IN CLIST*      This,
+   IN CLIST_NODE* Position);
 
 
 /**
@@ -69,6 +82,7 @@ typedef struct CLIST
    CLIST_PUSH_FRONT      PushFront;
    CLIST_FRONT           Front;
    CLIST_GET_REF_TO_DATA GetRefToData;
+   CLIST_NEXT            Next;
 } CLIST;
 
 

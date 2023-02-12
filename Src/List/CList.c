@@ -179,7 +179,7 @@ STATUS_CODE
 CListGetRefToData(
    IN CLIST*      This,
    IN CLIST_NODE* Position,
-   IN void**      Data,
+   IN void***     Data,
    IN size_t**    DataSize)
 {
    STATUS_CODE status = SC_SUCCESS;
@@ -193,13 +193,34 @@ CListGetRefToData(
          break;
       }
 
-      *Data = Position->Data;
+      *Data = &Position->Data;
       *DataSize = &Position->DataSize;
 
    } while (false);
 
    return status;
 }
+
+
+CLIST_NODE*
+CListNext(
+   IN CLIST*      This,
+   IN CLIST_NODE* Position)
+{
+   STATUS_CODE status = SC_SUCCESS;
+
+   do
+   {
+      GET_THIS(This, CLIST_IMPL);
+      if (NULL == Position) { SET_SC(SC_INVALID_PARAMETER); break; }
+
+      return Position->Next;
+
+   } while (false);
+
+   return NULL;
+}
+
 
 
 CLIST*
@@ -215,6 +236,7 @@ CListCreate()
    this->VTable.PushFront    = CListPushFront;
    this->VTable.Front        = CListFront;
    this->VTable.GetRefToData = CListGetRefToData;
+   this->VTable.Next         = CListNext;
 
    return &this->VTable;
 }
