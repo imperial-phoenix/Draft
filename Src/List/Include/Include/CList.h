@@ -11,6 +11,7 @@
 
 
 typedef struct CLIST CLIST;
+typedef struct CLIST_NODE CLIST_NODE;
 
 
 /**
@@ -29,12 +30,27 @@ STATUS_CODE
 
 
 /**
+ * @brief Returns the node with the first element in the list.
+ *
+ * @param[in]  This  Pointer to CList protocol
+ *
+ * @retval  NULL         If This is invalid or the list is empty
+ * @retval  CLIST_NODE*  Otherwise
+ */
+typedef
+CLIST_NODE*
+(*CLIST_FRONT)(
+   IN CLIST* This);
+
+
+/**
  * @struct CLIST
  * @brief  Doubly Linked List protocol.
  */
 typedef struct CLIST
 {
    CLIST_PUSH_FRONT PushFront;
+   CLIST_FRONT      Front;
 } CLIST;
 
 

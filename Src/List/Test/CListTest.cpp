@@ -90,6 +90,57 @@ TEST(CList, CListPushFront_ValidPrms)
 }
 
 
+TEST(CList, CListFront_ValidPrms_1)
+{
+   // Arrange
+   CLIST* list = NULL;
+   STATUS_CODE status = SC_SUCCESS;
+
+   // Act
+   list = CListCreate();
+   int data = 25;
+   status = list->PushFront(list, &data, sizeof(int));
+   ASSERT_FALSE(SC_ERROR(status));
+   CLIST_NODE* head = list->Front(list);
+
+   // Assert
+   ASSERT_FALSE(head == NULL);
+}
+
+
+TEST(CList, CListFront_ValidPrms_2)
+{
+   // Arrange
+   CLIST* list = NULL;
+   STATUS_CODE status = SC_SUCCESS;
+
+   // Act
+   list = CListCreate();
+   CLIST_NODE* head = list->Front(list);
+
+   // Assert
+   ASSERT_TRUE(head == NULL);
+}
+
+
+TEST(CList, CListFront_InvPrms)
+{
+   // Arrange
+   CLIST* list = NULL;
+   STATUS_CODE status = SC_SUCCESS;
+
+   // Act
+   list = CListCreate();
+   int data = 25;
+   status = list->PushFront(list, &data, sizeof(int));
+   ASSERT_FALSE(SC_ERROR(status));
+   CLIST_NODE* head = list->Front(NULL);
+
+   // Assert
+   ASSERT_TRUE(head == NULL);
+}
+
+
 int main(int argc, char** argv)
 {
    ::testing::InitGoogleTest(&argc, argv);

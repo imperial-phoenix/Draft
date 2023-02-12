@@ -139,6 +139,31 @@ CListPushFront(
 }
 
 
+/**
+ * @brief Returns the node with the first element in the list.
+ *
+ * @param[in]  This  Pointer to CList protocol
+ *
+ * @retval  NULL         If This is invalid or the list is empty
+ * @retval  CLIST_NODE*  Otherwise
+ */
+static
+CLIST_NODE*
+CListFront(
+   IN CLIST* This)
+{
+   STATUS_CODE status = SC_SUCCESS;
+
+   do
+   {
+      GET_THIS(This, CLIST_IMPL);
+      return this->Head;
+   } while (false);
+
+   return NULL;
+}
+
+
 CLIST*
 CListCreate()
 {
@@ -150,6 +175,7 @@ CListCreate()
    this->Size = 0;
 
    this->VTable.PushFront = CListPushFront;
+   this->VTable.Front = CListFront;
 
    return &this->VTable;
 }
