@@ -166,6 +166,42 @@ CListFront(
 }
 
 
+/**
+ * @brief Get link to data
+ *
+ * @param[in]  This      Pointer to CList protocol
+ * @param[in]  Position  Position in the list
+ * @param[in]  Data      Pointer to pointer to data
+ * @param[in]  DataSize  Pointer to pointer to data size
+ */
+static
+STATUS_CODE
+CListGetRefToData(
+   IN CLIST*      This,
+   IN CLIST_NODE* Position,
+   IN void**      Data,
+   IN size_t**    DataSize)
+{
+   STATUS_CODE status = SC_SUCCESS;
+
+   do
+   {
+      GET_THIS(This, CLIST_IMPL);
+      if ((NULL == Position) || (NULL == Data) || (NULL == DataSize))
+      {
+         SET_SC(SC_INVALID_PARAMETER);
+         break;
+      }
+
+      *Data = Position->Data;
+      *DataSize = &Position->DataSize;
+
+   } while (false);
+
+   return status;
+}
+
+
 CLIST*
 CListCreate()
 {
@@ -176,8 +212,9 @@ CListCreate()
    this->Head = this->Tail = NULL;
    this->Size = 0;
 
-   this->VTable.PushFront = CListPushFront;
-   this->VTable.Front = CListFront;
+   this->VTable.PushFront    = CListPushFront;
+   this->VTable.Front        = CListFront;
+   this->VTable.GetRefToData = CListGetRefToData;
 
    return &this->VTable;
 }

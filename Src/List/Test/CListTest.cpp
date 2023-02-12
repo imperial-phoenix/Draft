@@ -141,6 +141,30 @@ TEST(CList, CListFront_InvPrms)
 }
 
 
+TEST(CList, CListGetRefToData)
+{
+   // Arrange
+   CLIST* list = NULL;
+   STATUS_CODE status = SC_SUCCESS;
+
+   // Act
+   list = CListCreate();
+   int data = 25;
+   status = list->PushFront(list, &data, sizeof(int));
+   ASSERT_FALSE(SC_ERROR(status));
+   CLIST_NODE* head = list->Front(list);
+   ASSERT_FALSE(NULL == head);
+
+   // Assert
+   void *pData = NULL;
+   size_t *dataSize = NULL;
+   status = list->GetRefToData(list, head, &pData, &dataSize);
+   ASSERT_FALSE(SC_ERROR(status));
+   ASSERT_TRUE(*((int*)pData) == 25);
+   ASSERT_TRUE(*dataSize = sizeof(int));
+}
+
+
 int main(int argc, char** argv)
 {
    ::testing::InitGoogleTest(&argc, argv);

@@ -44,13 +44,31 @@ CLIST_NODE*
 
 
 /**
+ * @brief Get link to data
+ *
+ * @param[in]  This      Pointer to CList protocol
+ * @param[in]  Position  Position in the list
+ * @param[in]  Data      Pointer to pointer to data
+ * @param[in]  DataSize  Pointer to pointer to data size
+ */
+typedef
+STATUS_CODE
+(*CLIST_GET_REF_TO_DATA)(
+   IN CLIST*      This,
+   IN CLIST_NODE* Position,
+   IN void**      Data,
+   IN size_t**    DataSize);
+
+
+/**
  * @struct CLIST
  * @brief  Doubly Linked List protocol.
  */
 typedef struct CLIST
 {
-   CLIST_PUSH_FRONT PushFront;
-   CLIST_FRONT      Front;
+   CLIST_PUSH_FRONT      PushFront;
+   CLIST_FRONT           Front;
+   CLIST_GET_REF_TO_DATA GetRefToData;
 } CLIST;
 
 
