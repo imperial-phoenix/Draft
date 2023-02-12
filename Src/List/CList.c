@@ -21,9 +21,10 @@
  */
 typedef struct CLIST_NODE
 {
-   struct CLIST_NODE* Prev; /** Pointer to previous node */
-   struct CLIST_NODE* Next; /** Pointer to next node     */
-   void*              Data; /** Data stored in the node  */
+   struct CLIST_NODE* Prev;     /** Pointer to previous node */
+   struct CLIST_NODE* Next;     /** Pointer to next node     */
+   void*              Data;     /** Data stored in the node  */
+   size_t             DataSize; /** Size of data stored in the node */
 } CLIST_NODE;
 
 
@@ -83,6 +84,7 @@ InCreateNode(
    memcpy(node->Data, Data, DataSize);
    node->Prev = Prev;
    node->Next = Next;
+   node->DataSize = DataSize;
 
    return node;
 }
