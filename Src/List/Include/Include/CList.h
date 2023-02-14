@@ -48,7 +48,7 @@ CLIST_NODE*
  *
  * @param[in]  This      Pointer to CList protocol
  * @param[in]  Position  Position in the list
- * @param[in]  Data      Pointer to pointer to data
+ * @param[in]  Data      Pointer to pointer to pointer to data
  * @param[in]  DataSize  Pointer to pointer to data size
  */
 typedef
@@ -61,16 +61,43 @@ STATUS_CODE
 
 
 /**
- * @brief 
- * 
+ * Get copy of data.
+ *
+ * @param[in]  This       Pointer to CList protocol
+ * @param[in]  Position   Position in the list
+ * @param[out]  Data      Data
+ * @param[out]  DataSize  Data size
+ */
+typedef
+STATUS_CODE
+(*CLIST_GET_COPY_DATA)(
+   IN CLIST*      This,
+   IN CLIST_NODE* Position,
+   OUT void**     Data,
+   OUT size_t*    DataSize);
+
+
+/**
+ * Returns the position of the next element in the list.
+ * Position must not be NULL.
+ *
  * @param[in]  This      Pointer to CList protocol
- * @param[in]  Position  
+ * @param[in]  Position  Starting position.
  */
 typedef
 CLIST_NODE*
 (*CLIST_NEXT)(
    IN CLIST*      This,
    IN CLIST_NODE* Position);
+
+
+// typedef
+// STATUS_CODE
+// (*CLIST_INSERT_AFTER)(
+//    IN CLIST* This,
+//    IN CLIST_NODE* Position,
+//    IN void* Data,
+//    IN size_t DataSize);
 
 
 /**
@@ -82,6 +109,7 @@ typedef struct CLIST
    CLIST_PUSH_FRONT      PushFront;
    CLIST_FRONT           Front;
    CLIST_GET_REF_TO_DATA GetRefToData;
+   CLIST_GET_COPY_DATA   GetCopyData;
    CLIST_NEXT            Next;
 } CLIST;
 

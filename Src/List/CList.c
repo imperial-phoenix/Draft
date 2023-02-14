@@ -171,7 +171,7 @@ CListFront(
  *
  * @param[in]  This      Pointer to CList protocol
  * @param[in]  Position  Position in the list
- * @param[in]  Data      Pointer to pointer to data
+ * @param[in]  Data      Pointer to pointer to pointer to data
  * @param[in]  DataSize  Pointer to pointer to data size
  */
 static
@@ -202,6 +202,46 @@ CListGetRefToData(
 }
 
 
+static
+STATUS_CODE
+CListGetCopyData(
+   IN CLIST*      This,
+   IN CLIST_NODE* Position,
+   OUT void**     Data,
+   OUT size_t*    DataSize)
+{
+   STATUS_CODE status = SC_SUCCESS;
+
+   do
+   {
+      GET_THIS(This, CLIST_IMPL);
+
+      if ((NULL == Position) || (NULL == Data) || (NULL == DataSize))
+      {
+         SET_SC(SC_INVALID_PARAMETER);
+         break;
+      }
+
+      *Data = malloc(Position->DataSize);
+      if (NULL == *Data) { SET_SC(SC_NOT_ENOUGH_MEMORY); break; }
+
+      memcpy(*Data, Position->Data, Position->DataSize);
+      *DataSize = Position->DataSize;
+
+   } while (false);
+
+   return status;
+}
+
+
+/**
+ * Returns the position of the next element in the list.
+ * Position must not be NULL.
+ *
+ * @param[in]  This      Pointer to CList protocol
+ * @param[in]  Position  Starting position.
+ */
+static
 CLIST_NODE*
 CListNext(
    IN CLIST*      This,
@@ -222,6 +262,33 @@ CListNext(
 }
 
 
+// static
+// STATUS_CODE
+// CListInsertAfter(
+//    IN CLIST* This,
+//    IN CLIST_NODE* Position,
+//    IN void* Data,
+//    IN size_t DataSize)
+// {
+//    STATUS_CODE status = SC_SUCCESS;
+
+//    do
+//    {
+//       GET_THIS(This, CLIST_IMPL);
+//       if ((NULL == Position) || (NULL == Data) || (0 == DataSize))
+//       {
+//          SET_SC(SC_INVALID_PARAMETER);
+//          break;
+//       }
+
+//       CLIST_NODE* node = InCreateNode(Data, DataSize, Position, Position->)
+
+//    } while (false);
+
+//    return status;
+// }
+
+
 
 CLIST*
 CListCreate()
@@ -237,6 +304,7 @@ CListCreate()
    this->VTable.Front        = CListFront;
    this->VTable.GetRefToData = CListGetRefToData;
    this->VTable.Next         = CListNext;
+   this->VTable.GetCopyData  = CListGetCopyData;
 
    return &this->VTable;
 }

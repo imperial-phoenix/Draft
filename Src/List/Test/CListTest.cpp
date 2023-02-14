@@ -37,7 +37,7 @@ struct CListEmpty : public testing::Test
 };
 
 
-struct CListOneElement : public testing::Test
+struct CListTwentyFiveElement : public testing::Test
 {
    CLIST* list = NULL;
 
@@ -47,9 +47,12 @@ struct CListOneElement : public testing::Test
       list = CListCreate();
       ASSERT_FALSE(list == NULL);
 
-      int data = 1;
-      STATUS_CODE status = list->PushFront(list, &data, sizeof(int));
-      ASSERT_FALSE(SC_ERROR(status));
+      STATUS_CODE status = SC_SUCCESS;
+      for (size_t i = 0; i < 25; ++i)
+      {
+         status = list->PushFront(list, &i, sizeof(size_t));
+         ASSERT_FALSE(SC_ERROR(status));
+      }
    }
 
    // You can define per-test tear-down logic as usual
@@ -124,8 +127,6 @@ TEST_F(CListEmpty, PushFrontValidPrms)
       status = list->GetRefToData(list, position, &data, &dataSize);
       ASSERT_FALSE(SC_ERROR(status));
 
-      std::printf("data: %ld\n", **((size_t**)data));
-
       position = list->Next(list, position);
    }
 
@@ -148,8 +149,6 @@ TEST_F(CListEmpty, PushFrontValidPrms)
    {
       status = list->GetRefToData(list, position, &data, &dataSize);
       ASSERT_FALSE(SC_ERROR(status));
-
-      std::printf("data %lf\n", **((double**)data));
 
       position = list->Next(list, position);
    }
@@ -176,16 +175,20 @@ TEST_F(CListEmpty, FrontOnEmpty)
 }
 
 
-TEST_F(CListOneElement, Front)
+TEST_F(CListTwentyFiveElement, Front)
 {
    /*** Arrange ***/
    STATUS_CODE status = SC_SUCCESS;
 
-   /*** Act ***/
+   /*** Act && Assert ***/
+   // Valid data
    CLIST_NODE* head = list->Front(list);
-
-   /*** Assert ***/
    EXPECT_TRUE(NULL != head);
+
+   // Invalid data
+   int someData;
+   head = list->Front((CLIST*)&someData);
+   EXPECT_TRUE(NULL == head);
 }
 
 
@@ -194,7 +197,7 @@ TEST_F(CListOneElement, Front)
 // ///////////////////////////////////////////////////////////
 
 
-TEST_F(CListOneElement, GetRefToDataInvPrms)
+TEST_F(CListTwentyFiveElement, GetRefToDataInvPrms)
 {
    /*** Arrange ***/
    STATUS_CODE status = SC_SUCCESS;
@@ -223,7 +226,7 @@ TEST_F(CListOneElement, GetRefToDataInvPrms)
 }
 
 
-TEST_F(CListOneElement, GetRefToDataValidPrms)
+TEST_F(CListTwentyFiveElement, GetRefToDataValidPrms)
 {
    /*** Arrange ***/
    STATUS_CODE status = SC_SUCCESS;
@@ -237,8 +240,8 @@ TEST_F(CListOneElement, GetRefToDataValidPrms)
 
    status = list->GetRefToData(list, head, &data, &dataSize);
    EXPECT_FALSE(SC_ERROR(status));
-   EXPECT_TRUE(1 == **((int**)data));
-   EXPECT_TRUE(sizeof(int) == *dataSize);
+   EXPECT_TRUE(24 == **((size_t**)data));
+   EXPECT_TRUE(sizeof(size_t) == *dataSize);
 
    // Change data
    free(*data);
@@ -255,9 +258,38 @@ TEST_F(CListOneElement, GetRefToDataValidPrms)
 
 
 ///////////////////////////////////////////////////////////
-//                         Front                         //
+//                     GetCopyData                       //
 ///////////////////////////////////////////////////////////
 
+TEST_F(CListTwentyFiveElement, GetCopyData)
+{
+   /*** Arrange ***/
+   STATUS_CODE status = SC_SUCCESS;
+
+   /*** Act && Assert ***/
+   // Invalid params
+   status = list->GetCopyData(NULL, NULL, NULL, NULL);
+   EXPECT_TRUE(SC_ERROR(status));
+
+   // Valid params
+   CLIST_NODE *position = list->Front(list);
+   ASSERT_TRUE(position != NULL);
+
+   size_t expected = 24;
+   while (position != NULL)
+   {
+      size_t* data = NULL;
+      size_t  dataSize = 0;
+
+      status = list->GetCopyData(list, position, (void**)&data, &dataSize);
+      ASSERT_FALSE(SC_ERROR(status));
+      EXPECT_TRUE(expected == *data);
+      EXPECT_TRUE(sizeof(size_t) == dataSize);
+
+      position = list->Next(list, position);
+      --expected;
+   }
+}
 
 
 int main(int argc, char** argv)
