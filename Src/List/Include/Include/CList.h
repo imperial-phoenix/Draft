@@ -77,6 +77,13 @@ STATUS_CODE
    OUT size_t*    DataSize);
 
 
+typedef
+CLIST_NODE*
+(*CLIST_PREV)(
+   IN CLIST* This,
+   IN CLIST_NODE* Position);
+
+
 /**
  * Returns the position of the next element in the list.
  * Position must not be NULL.
@@ -91,13 +98,22 @@ CLIST_NODE*
    IN CLIST_NODE* Position);
 
 
-// typedef
-// STATUS_CODE
-// (*CLIST_INSERT_AFTER)(
-//    IN CLIST* This,
-//    IN CLIST_NODE* Position,
-//    IN void* Data,
-//    IN size_t DataSize);
+typedef
+STATUS_CODE
+(*CLIST_INSERT_AFTER)(
+   IN CLIST* This,
+   IN CLIST_NODE* Position,
+   IN void* Data,
+   IN size_t DataSize);
+
+
+typedef
+STATUS_CODE
+(*CLIST_INSERT_BEFORE)(
+   IN CLIST* This,
+   IN CLIST_NODE* Position,
+   IN void* Data,
+   IN size_t DataSize);
 
 
 /**
@@ -110,7 +126,10 @@ typedef struct CLIST
    CLIST_FRONT           Front;
    CLIST_GET_REF_TO_DATA GetRefToData;
    CLIST_GET_COPY_DATA   GetCopyData;
+   CLIST_PREV            Prev;
    CLIST_NEXT            Next;
+   CLIST_INSERT_AFTER    InsertAfter;
+   CLIST_INSERT_BEFORE   InsertBefore;
 } CLIST;
 
 

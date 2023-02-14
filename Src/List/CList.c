@@ -234,6 +234,27 @@ CListGetCopyData(
 }
 
 
+static
+CLIST_NODE*
+CListPrev(
+   IN CLIST*      This,
+   IN CLIST_NODE* Position)
+{
+   STATUS_CODE status = SC_SUCCESS;
+
+   do
+   {
+      GET_THIS(This, CLIST_IMPL);
+      if (NULL == Position) { SET_SC(SC_INVALID_PARAMETER); break; }
+
+      return Position->Prev;
+
+   } while (false);
+
+   return NULL;
+}
+
+
 /**
  * Returns the position of the next element in the list.
  * Position must not be NULL.
@@ -262,31 +283,77 @@ CListNext(
 }
 
 
-// static
-// STATUS_CODE
-// CListInsertAfter(
-//    IN CLIST* This,
-//    IN CLIST_NODE* Position,
-//    IN void* Data,
-//    IN size_t DataSize)
-// {
-//    STATUS_CODE status = SC_SUCCESS;
+static
+STATUS_CODE
+CListInsertBefore(
+   IN CLIST* This,
+   IN CLIST_NODE* Position,
+   IN void* Data,
+   IN size_t DataSize)
+{
+   STATUS_CODE status = SC_SUCCESS;
 
-//    do
-//    {
-//       GET_THIS(This, CLIST_IMPL);
-//       if ((NULL == Position) || (NULL == Data) || (0 == DataSize))
-//       {
-//          SET_SC(SC_INVALID_PARAMETER);
-//          break;
-//       }
+   do
+   {
+      GET_THIS(This, CLIST_IMPL);
+      if ((NULL == Position) || (NULL == Data) || (0 == DataSize))
+      {
+         SET_SC(SC_INVALID_PARAMETER);
+         break;
+      }
 
-//       CLIST_NODE* node = InCreateNode(Data, DataSize, Position, Position->)
+      CLIST_NODE* node = InCreateNode(Data, DataSize, Position->Prev, Position);
 
-//    } while (false);
+      if(Position->Prev != NULL)
+      {
+         Position->Prev->Next = node;
+      }
+      else
+      {
+         this->Head = node;
+         Position->Prev = node;
+      }
 
-//    return status;
-// }
+   } while (false);
+
+   return status;
+}
+
+
+static
+STATUS_CODE
+CListInsertAfter(
+   IN CLIST* This,
+   IN CLIST_NODE* Position,
+   IN void* Data,
+   IN size_t DataSize)
+{
+   STATUS_CODE status = SC_SUCCESS;
+
+   do
+   {
+      GET_THIS(This, CLIST_IMPL);
+      if ((NULL == Position) || (NULL == Data) || (0 == DataSize))
+      {
+         SET_SC(SC_INVALID_PARAMETER);
+         break;
+      }
+
+      CLIST_NODE* node = InCreateNode(Data, DataSize, Position, Position->Next);
+      Position->Next = node;
+      if (node->Next != NULL)
+      {
+         node->Next->Prev = node;
+      }
+      else
+      {
+         this->Tail = node;
+      }
+
+   } while (false);
+
+   return status;
+}
 
 
 
@@ -305,6 +372,9 @@ CListCreate()
    this->VTable.GetRefToData = CListGetRefToData;
    this->VTable.Next         = CListNext;
    this->VTable.GetCopyData  = CListGetCopyData;
+   this->VTable.InsertAfter  = CListInsertAfter;
+   this->VTable.InsertBefore = CListInsertBefore;
+   this->VTable.Prev         = CListPrev;
 
    return &this->VTable;
 }

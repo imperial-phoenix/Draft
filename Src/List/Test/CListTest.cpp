@@ -257,6 +257,95 @@ TEST_F(CListTwentyFiveElement, GetRefToDataValidPrms)
 }
 
 
+TEST_F(CListEmpty, InsertAfter)
+{
+   /*** Arrange ***/
+   STATUS_CODE status = SC_SUCCESS;
+
+   /*** Act && Assert ***/
+   // Invalid params
+   status = list->InsertAfter(NULL, NULL, NULL, 0);
+   EXPECT_TRUE(SC_ERROR(status));
+
+   status = list->InsertAfter(list, NULL, NULL, 0);
+   EXPECT_TRUE(SC_ERROR(status));
+
+   // Valid params
+   size_t data = 0;
+   status = list->PushFront(list, &data, sizeof(size_t));
+   EXPECT_FALSE(SC_ERROR(status));
+
+   CLIST_NODE* position = list->Front(list);
+   ASSERT_FALSE(NULL == position);
+   while (data++ != 24)
+   {
+      status = list->InsertAfter(list, position, &data, sizeof(size_t));
+      ASSERT_FALSE(SC_ERROR(status));
+
+      position = list->Next(list, position);
+      ASSERT_FALSE(NULL == position);
+   }
+
+   position = list->Front(list);
+   ASSERT_FALSE(NULL == position);
+
+   size_t  dataSize = 0;
+   size_t* receivedData = NULL;
+   while (position != NULL)
+   {
+      status = list->GetCopyData(list, position, (void**)&receivedData, &dataSize);
+      ASSERT_FALSE(SC_ERROR(status));
+
+      position = list->Next(list, position);
+   }
+}
+
+
+TEST_F(CListEmpty, InsertBefore)
+{
+   /*** Arrange ***/
+   STATUS_CODE status = SC_SUCCESS;
+
+   /*** Act && Assert ***/
+   // Invalid params
+   status = list->InsertBefore(NULL, NULL, NULL, 0);
+   EXPECT_TRUE(SC_ERROR(status));
+
+   status = list->InsertBefore(list, NULL, NULL, 0);
+   EXPECT_TRUE(SC_ERROR(status));
+
+   // Valid params
+   size_t data = 0;
+   status = list->PushFront(list, &data, sizeof(size_t));
+   ASSERT_FALSE(SC_ERROR(status));
+
+   CLIST_NODE* position = list->Front(list);
+   ASSERT_FALSE(NULL == position);
+   while (data++ != 24)
+   {
+      status = list->InsertBefore(list, position, &data, sizeof(size_t));
+      ASSERT_FALSE(SC_ERROR(status));
+
+      position = list->Prev(list, position);
+      ASSERT_FALSE(NULL == position);
+   }
+
+   position = list->Front(list);
+   ASSERT_FALSE(NULL == position);
+
+   size_t  dataSize = 0;
+   size_t* receivedData = NULL;
+   while (position != NULL)
+   {
+      status = list->GetCopyData(list, position, (void**)&receivedData, &dataSize);
+      ASSERT_FALSE(SC_ERROR(status));
+
+      position = list->Next(list, position);
+   }
+
+}
+
+
 ///////////////////////////////////////////////////////////
 //                     GetCopyData                       //
 ///////////////////////////////////////////////////////////
