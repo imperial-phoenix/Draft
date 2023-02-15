@@ -314,6 +314,8 @@ CListInsertBefore(
          Position->Prev = node;
       }
 
+      ++this->Size;
+
    } while (false);
 
    return status;
@@ -350,9 +352,63 @@ CListInsertAfter(
          this->Tail = node;
       }
 
+      ++this->Size;
+
    } while (false);
 
    return status;
+}
+
+
+void
+CListPopFront(
+   IN CLIST* This)
+{
+   STATUS_CODE status = SC_SUCCESS;
+
+   do
+   {
+      GET_THIS(This, CLIST_IMPL);
+
+      if (0 == this->Size)
+      {
+         return;
+      }
+      else if (1 == this->Size)
+      {
+         free(this->Head->Data);
+         free(this->Head);
+         this->Head = this->Tail = NULL;
+
+         --this->Size;
+      }
+      else
+      {
+         CLIST_NODE* tmp = this->Head;
+         this->Head = tmp->Next;
+         this->Head->Prev = tmp->Prev;
+         free(tmp->Data);
+         free(tmp);
+         --this->Size;
+      }
+
+   } while (false);
+
+}
+
+
+size_t
+CListSize(
+   IN CLIST* This)
+{
+   STATUS_CODE status = SC_SUCCESS;
+
+   do
+   {
+      GET_THIS(This, CLIST_IMPL);
+      return this->Size;
+   } while (false);
+
 }
 
 
@@ -375,6 +431,8 @@ CListCreate()
    this->VTable.InsertAfter  = CListInsertAfter;
    this->VTable.InsertBefore = CListInsertBefore;
    this->VTable.Prev         = CListPrev;
+   this->VTable.PopFront     = CListPopFront;
+   this->VTable.Size         = CListSize;
 
    return &this->VTable;
 }

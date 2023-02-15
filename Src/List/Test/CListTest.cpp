@@ -381,6 +381,78 @@ TEST_F(CListTwentyFiveElement, GetCopyData)
 }
 
 
+///////////////////////////////////////////////////////////
+//                      PopFront                         //
+///////////////////////////////////////////////////////////
+
+TEST_F(CListTwentyFiveElement, PopFront)
+{
+   /*** Arrange ***/
+   STATUS_CODE status = SC_SUCCESS;
+
+   /*** Act && Assert ***/
+   CLIST_NODE* position = list->Front(list);
+   ASSERT_FALSE(position == NULL);
+
+   for (size_t i = 1; i <= 5; ++i)
+   {
+      list->PopFront(list);
+      ASSERT_TRUE(25 - i == list->Size(list));
+   }
+
+}
+
+
+TEST_F(CListEmpty, PopFront)
+{
+   /*** Arrange ***/
+   STATUS_CODE status = SC_SUCCESS;
+
+   /*** Act && Assert ***/
+   list->PopFront(list);
+   ASSERT_TRUE(NULL == list->Front(list));
+   ASSERT_TRUE(0 == list->Size(list));
+
+   size_t data = 25;
+   status = list->PushFront(list, &data, sizeof(size_t));
+   ASSERT_FALSE(SC_ERROR(status));
+
+   ASSERT_FALSE(NULL == list->Front(list));
+   ASSERT_TRUE(1 == list->Size(list));
+
+   list->PopFront(list);
+   ASSERT_TRUE(0 == list->Size(list));
+   ASSERT_TRUE(NULL == list->Front(list));
+}
+
+
+TEST_F(CListEmpty, PopFrontTwoElements)
+{
+   /*** Arrange ***/
+   STATUS_CODE status = SC_SUCCESS;
+
+   /*** Act && Assert ***/
+   for (size_t i = 0; i < 2; ++i)
+   {
+      status = list->PushFront(list, &i, sizeof(size_t));
+      ASSERT_FALSE(SC_ERROR(status));
+   }
+
+   list->PopFront(list);
+   ASSERT_TRUE(1 == list->Size(list));
+
+   CLIST_NODE* head = list->Front(list);
+   ASSERT_TRUE(head != NULL);
+
+   size_t* data = NULL;
+   size_t dataSize = 0;
+   status = list->GetCopyData(list, head, (void**)&data, &dataSize);
+   ASSERT_FALSE(SC_ERROR(status));
+   ASSERT_TRUE(0 == *data);
+   ASSERT_TRUE(sizeof(size_t) == dataSize);
+}
+
+
 int main(int argc, char** argv)
 {
    ::testing::InitGoogleTest(&argc, argv);

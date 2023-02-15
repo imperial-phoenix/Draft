@@ -116,6 +116,18 @@ STATUS_CODE
    IN size_t DataSize);
 
 
+typedef
+void
+(*CLIST_POP_FRONT)(
+   IN CLIST* This);
+
+
+typedef
+size_t
+(*CLIST_SIZE)(
+   IN CLIST* This);
+
+
 /**
  * @struct CLIST
  * @brief  Doubly Linked List protocol.
@@ -130,6 +142,8 @@ typedef struct CLIST
    CLIST_NEXT            Next;
    CLIST_INSERT_AFTER    InsertAfter;
    CLIST_INSERT_BEFORE   InsertBefore;
+   CLIST_POP_FRONT       PopFront;
+   CLIST_SIZE            Size;
 } CLIST;
 
 
