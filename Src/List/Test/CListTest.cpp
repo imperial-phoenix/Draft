@@ -453,6 +453,61 @@ TEST_F(CListEmpty, PopFrontTwoElements)
 }
 
 
+TEST_F(CListEmpty, PushBack)
+{
+   /*** Arrange ***/
+   STATUS_CODE status = SC_SUCCESS;
+
+   /*** Act && Assert ***/
+   // Invalid params
+   status = list->BushBack(NULL, NULL, 0);
+   EXPECT_TRUE(SC_ERROR(status));
+
+   status = list->BushBack(list, NULL, 0);
+   EXPECT_TRUE(SC_ERROR(status));
+
+   // Valid params
+   for (size_t i = 0; i < 25; ++i)
+   {
+      status = list->BushBack(list, &i, sizeof(size_t));
+      ASSERT_FALSE(SC_ERROR(status));
+   }
+
+   CLIST_NODE* position = list->Front(list);
+   ASSERT_TRUE(NULL != position);
+   size_t expected = 0;
+   while (position != NULL)
+   {
+      size_t* data = NULL;
+      size_t dataSize = 0;
+      status = list->GetCopyData(list, position, (void**)&data, &dataSize);
+      ASSERT_FALSE(SC_ERROR(status));
+      ASSERT_TRUE(expected == *data);
+      ASSERT_TRUE(sizeof(size_t) == dataSize);
+
+      position = list->Next(list, position);
+      ++expected;
+   }
+
+   expected = 24;
+   position = list->Back(list);
+   ASSERT_TRUE(NULL != position);
+   while (position != NULL)
+   {
+      size_t* data = NULL;
+      size_t dataSize = 0;
+      status = list->GetCopyData(list, position, (void**)&data, &dataSize);
+      ASSERT_FALSE(SC_ERROR(status));
+      ASSERT_TRUE(expected == *data);
+      ASSERT_TRUE(sizeof(size_t) == dataSize);
+
+      position = list->Prev(list, position);
+      --expected;
+   }
+
+}
+
+
 int main(int argc, char** argv)
 {
    ::testing::InitGoogleTest(&argc, argv);

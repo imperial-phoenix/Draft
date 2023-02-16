@@ -412,6 +412,59 @@ CListSize(
 }
 
 
+CLIST_NODE*
+CListBack(
+   IN CLIST* This)
+{
+   STATUS_CODE status = SC_SUCCESS;
+
+   do
+   {
+      GET_THIS(This, CLIST_IMPL);
+      return this->Tail;
+   } while (false);
+
+   return NULL;
+}
+
+
+static
+STATUS_CODE
+CListPushBack(
+   IN CLIST* This,
+   IN void*  Data,
+   IN size_t DataSize)
+{
+   STATUS_CODE status = SC_SUCCESS;
+
+   do
+   {
+      GET_THIS(This, CLIST_IMPL);
+      if (NULL == Data || 0 == DataSize)
+      {
+         SET_SC(SC_INVALID_PARAMETER);
+         break;
+      }
+
+      CLIST_NODE* node = InCreateNode(Data, DataSize, this->Tail, NULL);
+
+      if (0 == this->Size)
+      {
+         this->Head = this->Tail = node;
+      }
+      else
+      {
+         this->Tail->Next = node;
+         this->Tail = node;
+      }
+
+      ++this->Size;
+
+   } while (false);
+
+   return status;
+}
+
 
 CLIST*
 CListCreate()
@@ -433,6 +486,8 @@ CListCreate()
    this->VTable.Prev         = CListPrev;
    this->VTable.PopFront     = CListPopFront;
    this->VTable.Size         = CListSize;
+   this->VTable.Back         = CListBack;
+   this->VTable.BushBack     = CListPushBack;
 
    return &this->VTable;
 }

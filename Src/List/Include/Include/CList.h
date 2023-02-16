@@ -128,6 +128,21 @@ size_t
    IN CLIST* This);
 
 
+typedef
+CLIST_NODE*
+(*CLIST_BACK)(
+   IN CLIST* This);
+
+
+typedef
+STATUS_CODE
+(*CLIST_PUSH_BACK)(
+   IN CLIST* This,
+   IN void*  Data,
+   IN size_t DataSize);
+
+
+
 /**
  * @struct CLIST
  * @brief  Doubly Linked List protocol.
@@ -144,6 +159,8 @@ typedef struct CLIST
    CLIST_INSERT_BEFORE   InsertBefore;
    CLIST_POP_FRONT       PopFront;
    CLIST_SIZE            Size;
+   CLIST_BACK            Back;
+   CLIST_PUSH_BACK       BushBack;
 } CLIST;
 
 
