@@ -25,6 +25,10 @@ else()
    message(STATUS "Run the command git submodule update --init --recursive")
 endif()
 
+# PVS
+include(CMake/WorkWithPvs.cmake)
+is_pvs_available(${CMAKE_CURRENT_LIST_DIR}/Extern)
+
 # Build Configuration Information
 message(STATUS "* ============================== *")
 message(STATUS "| OS           : ${CMAKE_SYSTEM_NAME}           |")
@@ -35,6 +39,11 @@ if (IS_GOOGLETEST_FOUND)
    message(STATUS "| GTest        : available       |")
 else()
    message(STATUS "| GTest        : not available   |")
+endif()
+if (IS_PVS_AVAILABLE)
+   message(STATUS "| PVS          : available       |")
+else()
+   message(STATUS "| PVS          : not available   |")
 endif()
 message(STATUS "* ============================== *")
 

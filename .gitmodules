@@ -1,3 +1,6 @@
 [submodule "Extern/GTest"]
 	path = Extern/GTest
 	url = https://github.com/google/googletest
+[submodule "Extern/Pvs"]
+	path = Extern/Pvs
+	url = https://github.com/viva64/pvs-studio-cmake-module

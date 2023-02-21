@@ -12,3 +12,5 @@ target_include_directories(${TARGET_NAME} PUBLIC ${SHARED_INCLUDE_DIRS} ${CMAKE_
 if (IS_GOOGLETEST_FOUND)
    add_subdirectory(Test)
 endif()
+
+set(TARGET_LIST ${TARGET_LIST} ${TARGET_NAME} PARENT_SCOPE)
