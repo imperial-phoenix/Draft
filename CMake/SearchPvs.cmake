@@ -1,14 +1,16 @@
-cmake_minimum_required(VERSION 3.20)
+# Модуль определения доступности Pvs в системе
 
+# PATH_TO_SUBMODULES[in]  Путь до папки с внешними проектами
+# IS_PVS_AVAILABLE[out]   Флаг доступности Pvs
 function(is_pvs_available PATH_TO_SUBMODULES)
    if (WIN32)
-      message(WARNING "PVS not available on Windows")
+      message(WARNING "PVS not available on Windows now")
    else()
       SET(PVS_STUDIO_BIN "pvs-studio-analyzer")
       SET(PVS_STUDIO_CONVERTER "plog-converter")
    endif()
 
-   # Изначально полагаем, что PVS не установлен
+   # Изначально полагаем, что PVS не найден
    SET(IS_PVS_AVAILABLE FALSE)
 
    find_program(PVS_STUDIO_BIN_PATH "${PVS_STUDIO_BIN}")
@@ -34,7 +36,5 @@ function(is_pvs_available PATH_TO_SUBMODULES)
    else()
       SET(IS_PVS_AVAILABLE FALSE PARENT_SCOPE)
    endif()
-
-
 
 endfunction()

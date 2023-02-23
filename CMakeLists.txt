@@ -26,7 +26,7 @@ else()
 endif()
 
 # PVS
-include(CMake/WorkWithPvs.cmake)
+include(CMake/SearchPvs.cmake)
 is_pvs_available(${CMAKE_CURRENT_LIST_DIR}/Extern)
 
 # Build Configuration Information
@@ -36,16 +36,28 @@ message(STATUS "| Build type   : ${CMAKE_BUILD_TYPE}           |")
 message(STATUS "| Generator    : ${CMAKE_GENERATOR}  |")
 message(STATUS "| CXX standard : ${CMAKE_CXX_STANDARD}              |")
 if (IS_GOOGLETEST_FOUND)
-   message(STATUS "| GTest        : available       |")
+   message(STATUS "| GTest        : Available       |")
 else()
-   message(STATUS "| GTest        : not available   |")
+   message(STATUS "| GTest        : Not available   |")
 endif()
 if (IS_PVS_AVAILABLE)
-   message(STATUS "| PVS          : available       |")
+   message(STATUS "| PVS          : Available       |")
 else()
-   message(STATUS "| PVS          : not available   |")
+   message(STATUS "| PVS          : Not available   |")
 endif()
 message(STATUS "* ============================== *")
+
+# Output directories
+set(OUTPUT_DEBUG_DIR "${PROJECT_SOURCE_DIR}/Output/Debug")
+set(OUTPUT_RELEASE_DIR "${PROJECT_SOURCE_DIR}/Output/Release")
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${OUTPUT_DEBUG_DIR}/Lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${OUTPUT_DEBUG_DIR}/Lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${OUTPUT_DEBUG_DIR}/Bin)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${OUTPUT_RELEASE_DIR}/Lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${OUTPUT_RELEASE_DIR}/Lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${OUTPUT_RELEASE_DIR}/Bin)
 
 # Subdirectories
 add_subdirectory(Src)
