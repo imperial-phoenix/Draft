@@ -1,7 +1,7 @@
 /**
- * @file    Misc.h
- * @brief   Entities common to all projects.
- * @ingroup MISC
+ * @file     Misc.h
+ * @brief    Entities common to all projects.
+ * @ingroup  MISC
  */
 
 #ifndef __MISC_H__
@@ -13,7 +13,7 @@
 
 
 ///////////////////////////////////////////////////////////
-//         Modules declaration block for doxygen         //
+///        Modules declaration block for doxygen        ///
 ///////////////////////////////////////////////////////////
 
 /** @defgroup  MISC             Entities common to all projects */
@@ -21,7 +21,7 @@
 
 
 ///////////////////////////////////////////////////////////
-//         Modules declaration block for doxygen         //
+///        Modules declaration block for doxygen        ///
 ///////////////////////////////////////////////////////////
 
 /** An input parameter in a function or method. */
@@ -35,7 +35,7 @@
 
 
 ///////////////////////////////////////////////////////////
-//                    Return statuses                    //
+///                   Return statuses                   ///
 ///////////////////////////////////////////////////////////
 
 /**
@@ -74,7 +74,7 @@ typedef uint32_t STATUS_CODE;
 
 
 ///////////////////////////////////////////////////////////
-//                  Encapsulation in C                   //
+///                 Encapsulation in C                  ///
 ///////////////////////////////////////////////////////////
 
 /** Unique protocol structure ID. Formed using macro STRUCT_ID_64.*/
@@ -106,8 +106,8 @@ typedef uint64_t STRUCT_ID;
 
 
 /**
- *  By pointer to the protocol(This), get the pointer to the
- *  structure(ClassName) that implements it.
+ * By pointer to the protocol(This), get the pointer to the
+ * structure(ClassName) that implements it.
  */
 #define GET_THIS(This, ClassName)                               \
    ClassName* this = GET_STRUCT_FIELD(This, ClassName, VTable); \

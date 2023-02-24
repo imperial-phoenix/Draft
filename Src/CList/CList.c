@@ -2,9 +2,9 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 /**
- * @file    CList.c
- * @brief   Doubly linked list implementation.
- * @ingroup DATA_STRUCTURES
+ * @file     CList.c
+ * @brief    Doubly linked list implementation.
+ * @ingroup  DATA_STRUCTURES
  */
 
 #include <stdlib.h>
@@ -14,14 +14,11 @@
 
 
 ///////////////////////////////////////////////////////////
-//                  Internal structures                  //
+///                 Internal structures                 ///
 ///////////////////////////////////////////////////////////
 
 
-/**
- * @struct CLIST_NODE
- * @brief  Doubly Linked List Node.
- */
+/** Doubly linked list node. */
 typedef struct CLIST_NODE
 {
    struct CLIST_NODE* Prev;     /** Pointer to previous node */
@@ -31,18 +28,15 @@ typedef struct CLIST_NODE
 } CLIST_NODE;
 
 
-/**
- * @struct CLIST_IMPL
- * @brief  CList protocol implementation.
- */
+/** CList protocol implementation. */
 typedef struct CLIST_IMPL
 {
    STRUCT_ID StructureId; /** Structure unique id */
    CLIST     VTable;      /** API                 */
 
-   CLIST_NODE* Head; /** Pointer to the first element in the list */
-   CLIST_NODE* Tail; /** Pointer to the last element in the list  */
-   size_t      Size; /** Number of nodes                          */
+   CLIST_NODE* Head; /** Pointer to the first node in the list */
+   CLIST_NODE* Tail; /** Pointer to the last node in the list  */
+   size_t      Size; /** Number of nodes */
 } CLIST_IMPL;
 
 
@@ -51,7 +45,7 @@ typedef struct CLIST_IMPL
 
 
 ///////////////////////////////////////////////////////////
-//                  Internal functions                   //
+///                 Internal functions                  ///
 ///////////////////////////////////////////////////////////
 
 
@@ -63,8 +57,8 @@ typedef struct CLIST_IMPL
  * @param[in]  Prev      Pointer to previous node
  * @param[in]  Next      Pointer to next node
  *
- * @retval CLIST_NODE* If the node is successfully created
- * @retval NULL        Otherwise
+ * @retval  CLIST_NODE*  If the node is successfully created
+ * @retval  NULL         On failure
  */
 static
 CLIST_NODE*
@@ -94,15 +88,19 @@ InCreateNode(
 
 
 ///////////////////////////////////////////////////////////
-//               CList API implementation                //
+///              CList API implementation               ///
 ///////////////////////////////////////////////////////////
 
 /**
- * Inserts a copy of the Data at the beginning of the list.
+ * Creates a node with a copy of the Data at the head of the list.
  *
  * @param[in]  This      Pointer to CList protocol
- * @param[in]  Data      Storage data
+ * @param[in]  Data      Data
  * @param[in]  DataSize  Data size
+ *
+ * @retval  SC_INVALID_PARAMETER  Invalid input parameter
+ * @retval  SC_SUCCESS            On success
+ * @retval  SC_UNSUCCESSFUL       On failure
  */
 static
 STATUS_CODE
@@ -145,12 +143,12 @@ CListPushFront(
 
 
 /**
- * @brief Returns the node with the first element in the list.
+ * Returns the first node in the list.
  *
  * @param[in]  This  Pointer to CList protocol
  *
  * @retval  NULL         If This is invalid or the list is empty
- * @retval  CLIST_NODE*  Otherwise
+ * @retval  CLIST_NODE*  List head
  */
 static
 CLIST_NODE*
@@ -170,12 +168,15 @@ CListFront(
 
 
 /**
- * @brief Get link to data
+ * Gets a link to the data stored in the Position node.
  *
  * @param[in]  This      Pointer to CList protocol
  * @param[in]  Position  Position in the list
- * @param[in]  Data      Pointer to pointer to pointer to data
+ * @param[in]  Data      Triple pointer to data
  * @param[in]  DataSize  Pointer to pointer to data size
+ *
+ * @retval  SC_INVALID_PARAMETER  Invalid input parameter
+ * @retval  SC_SUCCESS            On success
  */
 static
 STATUS_CODE
@@ -205,6 +206,18 @@ CListGetRefToData(
 }
 
 
+/**
+ * Gets a copy of the data stored in the Position node.
+ *
+ * @param[in]   This      Pointer to CList protocol
+ * @param[in]   Position  Position in the list
+ * @param[out]  Data      Data
+ * @param[out]  DataSize  Data size
+ *
+ * @retval  SC_INVALID_PARAMETER  Invalid input parameter
+ * @retval  SC_NOT_ENOUGH_MEMORY  Memory allocation error
+ * @retval  SC_SUCCESS            On success
+ */
 static
 STATUS_CODE
 CListGetCopyData(
@@ -237,6 +250,15 @@ CListGetCopyData(
 }
 
 
+/**
+ * Returns the previous node in the list.
+ *
+ * @param[in]  This      Pointer to CList protocol
+ * @param[in]  Position  Position in the list
+ *
+ * @retval  CLIST_NODE*  Next node
+ * @retval  NULL         If Invalid input parameter or there is no previous node
+ */
 static
 CLIST_NODE*
 CListPrev(
@@ -259,11 +281,13 @@ CListPrev(
 
 
 /**
- * Returns the position of the next element in the list.
- * Position must not be NULL.
+ * Returns the next node in the list.
  *
  * @param[in]  This      Pointer to CList protocol
- * @param[in]  Position  Starting position.
+ * @param[in]  Position  Position in the list
+ *
+ * @retval  CLIST_NODE*  Next node
+ * @retval  NULL         If Invalid input parameter or there is no next node
  */
 static
 CLIST_NODE*
@@ -286,6 +310,18 @@ CListNext(
 }
 
 
+/**
+ * Creates a node with a copy of the Data before Position node.
+ *
+ * @param[in]  This      Pointer to CList protocol
+ * @param[in]  Position  Position in the list
+ * @param[in]  Data      Data
+ * @param[in]  DataSize  Data size
+ *
+ * @retval  SC_INVALID_PARAMETER  Invalid input parameter
+ * @retval  SC_SUCCESS            On success
+ * @retval  SC_UNSUCCESSFUL       Otherwise
+ */
 static
 STATUS_CODE
 CListInsertBefore(
@@ -306,6 +342,7 @@ CListInsertBefore(
       }
 
       CLIST_NODE* node = InCreateNode(Data, DataSize, Position->Prev, Position);
+      if (NULL == node) { SET_SC(SC_UNSUCCESSFUL); break; }
 
       if(Position->Prev != NULL)
       {
@@ -325,6 +362,18 @@ CListInsertBefore(
 }
 
 
+/**
+ * Creates a node with a copy of the Data after Position node.
+ *
+ * @param[in]  This      Pointer to CList protocol
+ * @param[in]  Position  Position in the list
+ * @param[in]  Data      Data
+ * @param[in]  DataSize  Data size
+ *
+ * @retval  SC_INVALID_PARAMETER  Invalid input parameter
+ * @retval  SC_SUCCESS            On success
+ * @retval  SC_UNSUCCESSFUL       Otherwise
+ */
 static
 STATUS_CODE
 CListInsertAfter(
@@ -345,6 +394,7 @@ CListInsertAfter(
       }
 
       CLIST_NODE* node = InCreateNode(Data, DataSize, Position, Position->Next);
+      if (NULL == node) { SET_SC(SC_UNSUCCESSFUL); break; }
       Position->Next = node;
       if (node->Next != NULL)
       {
@@ -363,6 +413,14 @@ CListInsertAfter(
 }
 
 
+/**
+ * Removes the first node in the list.
+ *
+ * @param[in]  This  Pointer to CList protocol
+ *
+ * @retval  SC_INVALID_PARAMETER  Invalid input parameter
+ * @retval  SC_SUCCESS            On success
+ */
 void
 CListPopFront(
    IN CLIST* This)
@@ -400,6 +458,13 @@ CListPopFront(
 }
 
 
+/**
+ * Returns the number of nodes.
+ *
+ * @param[in]  This  Pointer to CList protocol
+ *
+ * @return  Number of nodes. If This is invalid then returns 0.
+ */
 size_t
 CListSize(
    IN CLIST* This)
@@ -412,9 +477,18 @@ CListSize(
       return this->Size;
    } while (false);
 
+   return 0;
 }
 
 
+/**
+ * Returns the node with the last elemet in the list.
+ *
+ * @param[in]  This  Pointer to CList protocol
+ *
+ * @retval  NULL         If This is invalid or the list is empty
+ * @retval  CLIST_NODE*  List tail
+ */
 CLIST_NODE*
 CListBack(
    IN CLIST* This)
@@ -431,6 +505,17 @@ CListBack(
 }
 
 
+/**
+ * Creates a node with a copy of the Data at the end of the list.
+ *
+ * @param[in]  This      Pointer to CList protocol
+ * @param[in]  Data      Data
+ * @param[in]  DataSize  Data size
+ *
+ * @retval  SC_INVALID_PARAMETER  Invalid input parameter
+ * @retval  SC_SUCCESS            On success
+ * @retval  SC_UNSUCCESSFUL       On failure
+ */
 static
 STATUS_CODE
 CListPushBack(
@@ -490,7 +575,8 @@ CListCreate()
    this->VTable.PopFront     = CListPopFront;
    this->VTable.Size         = CListSize;
    this->VTable.Back         = CListBack;
-   this->VTable.BushBack     = CListPushBack;
+   this->VTable.PushBack     = CListPushBack;
+   this->VTable.PopBack      = NULL;
 
    return &this->VTable;
 }

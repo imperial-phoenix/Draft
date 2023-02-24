@@ -460,16 +460,16 @@ TEST_F(CListEmpty, PushBack)
 
    /*** Act && Assert ***/
    // Invalid params
-   status = list->BushBack(NULL, NULL, 0);
+   status = list->PushBack(NULL, NULL, 0);
    EXPECT_TRUE(SC_ERROR(status));
 
-   status = list->BushBack(list, NULL, 0);
+   status = list->PushBack(list, NULL, 0);
    EXPECT_TRUE(SC_ERROR(status));
 
    // Valid params
    for (size_t i = 0; i < 25; ++i)
    {
-      status = list->BushBack(list, &i, sizeof(size_t));
+      status = list->PushBack(list, &i, sizeof(size_t));
       ASSERT_FALSE(SC_ERROR(status));
    }
 
